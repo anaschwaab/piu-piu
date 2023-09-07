@@ -6,3 +6,14 @@ export type User = {
   description?: string;
   posts?: number;
 };
+
+export interface LoginProps {
+  handle: string,
+  password: string
+}
+
+export interface RegisterProps {
+  name: string,
+  handle: string, 
+  password: string
+}
