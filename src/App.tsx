@@ -1,7 +1,14 @@
 import "./App.css";
+import { AuthProvider } from "./context/AuthContext";
+import { PiupiuRoutes } from "./routes/PiupiuRoutes";
 
 function App() {
-  return <h1>Hello world</h1>;
+  return (
+
+    <AuthProvider>
+      <PiupiuRoutes />
+    </AuthProvider>
+  );
 }
 
 export default App;
