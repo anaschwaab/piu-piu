@@ -3,13 +3,24 @@ import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import { AuthFormLayout } from "../components/AuthFormLayout";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export const Login = () => {
   const [user, setUser] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { signIn } = useAuth();
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      setIsLoading(true);
+      await signIn({ handle: user, password })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -31,7 +42,7 @@ export const Login = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button loading={true} thickness="thick">
+        <Button loading={isLoading} thickness="thick">
           Login
         </Button>
         <Link className="pt-4 hover:underline mx-auto " to="/signup">
