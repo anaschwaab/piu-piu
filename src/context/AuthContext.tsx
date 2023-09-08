@@ -1,12 +1,13 @@
 import { ReactNode, createContext, useContext, useState, useEffect } from "react";
 import { Login } from "../service";
-import { LoginProps } from "../types/Users";
+import { LoginProps, User } from "../types/Users";
 import { useNavigate } from "react-router-dom";
 
 type AuthData = {
     isAuthenticated: boolean;
     signIn: ({ handle, password }: LoginProps) => Promise<void>;
     logout: () => void;
+    user?: User
 }
 
 const AuthContext = createContext<AuthData | undefined>(undefined);
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthData | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
+    const [user, setUser] = useState();
 
      const signIn = async ({ handle, password}: LoginProps) => {
         try {
@@ -23,6 +25,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (response.token) {
                 localStorage.setItem("token", response.token);
                 navigate('/home');
+                setUser(response.user)
             }
         } catch (error) {
             console.log(error)
@@ -43,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, signIn, logout }}>
+        <AuthContext.Provider value={{ isAuthenticated, signIn, logout, user }}>
         { children }
         </AuthContext.Provider>
     );
