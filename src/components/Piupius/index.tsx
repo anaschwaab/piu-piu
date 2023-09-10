@@ -9,6 +9,7 @@ import NewPiupiu from "../NewPiupiu";
 import { forwardRef } from "react";
 import { checkForImageLinks } from "../../helpers";
 import { backendRoutes, routes } from "../../routes";
+import { useAuth } from "../../context/AuthContext";
 
 type PiupiuProps = {
   id: string;
@@ -32,6 +33,10 @@ export const Piupiu = forwardRef(
     const replyRef = useRef<HTMLDivElement | null>(null);
     const debounceTimer = useRef<number | undefined>();
     const [foundLinks, setFoundLinks] = useState("");
+
+    const { token } = useAuth()
+    // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 
     const handleLike = useCallback(async () => {
       setLiked(!liked);

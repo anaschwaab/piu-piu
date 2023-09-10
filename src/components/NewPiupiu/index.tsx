@@ -5,6 +5,8 @@ import sound from "../../assets/E o pintinho piu.mp3";
 import { Textarea } from "../Textarea";
 import { DeletableImage } from "../DeletableImage";
 import { checkForImageLinks } from "../../helpers";
+import { postPiu } from "../../service";
+import { useNavigate, useParams } from "react-router-dom";
 
 type NewPiupiuProps = {
   user: {
@@ -19,6 +21,7 @@ type NewPiupiuProps = {
   variant?: "new" | "reply" | "borderless";
   loading?: boolean;
 };
+
 export const NewPiupiu = ({
   user,
   value,
@@ -32,6 +35,7 @@ export const NewPiupiu = ({
   const [error, setError] = useState(false);
   const [foundLinks, setFoundLinks] = useState("");
   const piupiuSound = useMemo(() => new Audio(sound), []);
+
 
   const placeholderText = useMemo(
     () =>
@@ -58,7 +62,7 @@ export const NewPiupiu = ({
     onChange?.(e);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const sendForm = async (e: FormEvent) => {
     e.preventDefault();
     onSubmit?.(e, foundLinks ? `${value} ${foundLinks}` : value || "");
     setFoundLinks("");
@@ -75,7 +79,7 @@ export const NewPiupiu = ({
     >
       <ProfilePic userName={user.name} image={user.image_url} />
       <form
-        onSubmit={handleSubmit}
+        onSubmit={sendForm}
         className={`w-full px-3 flex justify-end ${
           variant === "new" ? "flex-col" : "items-center"
         }`}
