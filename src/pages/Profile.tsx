@@ -8,10 +8,9 @@ type ProfileProps = {
 };
 export const Profile = ({ postsRoute }: ProfileProps) => {
   const { handle } = useParams();
-  console.log(postsRoute);
 
   const { data: piupius, isLoading } = useQuery({ 
-    queryKey: ['piupius', postsRoute],
+    queryKey: ['piupius', postsRoute, handle], // queryKey vai ficar observando o handle (tipo useEffect)
     queryFn: async() => await getPosts({ handle, postsRoute })
   });
 

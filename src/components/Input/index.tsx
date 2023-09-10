@@ -1,8 +1,15 @@
-import { InputHTMLAttributes } from "react";
+import { InputHTMLAttributes, ChangeEvent } from "react";
 
-type ButtonProps = InputHTMLAttributes<HTMLInputElement>;
+type InputProps = InputHTMLAttributes<HTMLInputElement>;
 
-export const Input = ({ placeholder, value, ...props }: ButtonProps) => {
+export const Input = ({ placeholder, value, onChange, ...props }: InputProps) => {
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (onChange) {
+      onChange(e);
+    }
+  };
+
   return (
     <div className="relative w-full  group">
       {placeholder && (
@@ -17,6 +24,7 @@ export const Input = ({ placeholder, value, ...props }: ButtonProps) => {
       <input
         {...props}
         value={value}
+        onChange={handleInputChange}
         className={`px-2 w-full focus:outline focus:outline-primary-100 ${
           placeholder ? "pt-5 pb-2" : "py-3"
         }`}
