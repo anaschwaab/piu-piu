@@ -5,28 +5,46 @@ import { Piu } from "../types/Pius";
 import NewPiupiu from "../components/NewPiupiu";
 import { PiupiuList } from "../components/PiupiuList";
 import { User } from "../types/Users";
+import { getPiuReplies, getSinglePiu, postLikes, postPiuReply } from "../service";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 export const SinglePiupiu = () => {
-  const [replies, setReplies] = useState<Piu[]>();
   const [liked, setLiked] = useState(false);
-  const [post, setPost] = useState<Piu>();
   const [userReply, setuserReply] = useState("");
   const [replying, setReplying] = useState(false);
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const { data: post } = useQuery({
+    queryKey: ["piu"],
+    queryFn: async () => await getSinglePiu(id),
+  });
+
+  const { data: singlePiu, isLoading } = useQuery({
+    queryKey: ["replies"],
+    queryFn: async () => await getPiuReplies(id),
+  });
 
   const getReplies = useCallback(async () => {}, []);
 
-  const handleSubmit = async (e: React.FormEvent, replyText?: string) => {
+  const handleSubmit = async (e: React.FormEvent, replyText: string) => {
     console.log(e, replyText);
+    await postPiuReply(replyText, id);
+    // Precisa atualizar a pagina depois que posta
+    navigate('home');
   };
 
-  const handleLike = useCallback(async () => {}, []);
+  const handleLike = useCallback(async () => {
+    postLikes(id);
+  }, []);
 
   return (
     <>
       <NavHeader title="Post" />
       <CompletePiupiu
         author={post?.author}
-        body={post?.message || ""}
+        body={post?.mensagem || "--"}
         reactions={{
           reactions: {
             comment: {
@@ -53,7 +71,11 @@ export const SinglePiupiu = () => {
         value={userReply}
         loading={replying}
       />
-      <PiupiuList piupius={replies} onChange={getReplies} />
+      <PiupiuList
+        piupius={singlePiu?.replies || []}
+        onChange={getReplies}
+        loading={isLoading}
+      />
     </>
   );
 };

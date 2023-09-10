@@ -8,6 +8,7 @@ type AuthData = {
     signIn: ({ handle, password }: LoginProps) => Promise<void>;
     logout: () => void;
     user?: User
+    token?: string
 }
 
 const AuthContext = createContext<AuthData | undefined>(undefined);
@@ -17,15 +18,18 @@ const AuthContext = createContext<AuthData | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const navigate = useNavigate();
-    const [user, setUser] = useState();
-
+    const userInfo = JSON.parse(localStorage.getItem('user') || '{}')
+    const [user, setUser] = useState(userInfo || {});
+    const [token, setToken] = useState(userInfo || {});
      const signIn = async ({ handle, password}: LoginProps) => {
         try {
             const response = await Login({ handle, password })
             if (response.token) {
                 localStorage.setItem("token", response.token);
+                localStorage.setItem("user", JSON.stringify(response.user));
                 navigate('/home');
                 setUser(response.user)
+                setToken(response.token)
             }
         } catch (error) {
             console.log(error)
@@ -33,20 +37,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const logout = () => {
+        localStorage.clear();
         setIsAuthenticated(false);
+        navigate("/");
     };
 
     useEffect(() => {
         const token = localStorage.getItem('token');
+        const user = localStorage.getItem('user');
         if (!token) {
             setIsAuthenticated(false);
             return 
         }
+        if (user) {
+            setUser(JSON.parse(user));
+        }
         setIsAuthenticated(true);
-    })
+    }, []);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, signIn, logout, user }}>
+        <AuthContext.Provider value={{ isAuthenticated, signIn, logout, user, token }}>
         { children }
         </AuthContext.Provider>
     );

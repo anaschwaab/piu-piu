@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NewPiupiu } from "../components/NewPiupiu";
 import { Piu } from "../types/Pius";
 import NavTitle from "../components/NavTitle";
@@ -8,12 +8,18 @@ import { usePagination } from "../hooks/useScroll";
 import { piuComponentHeight } from "../consts";
 import { User } from "../types/Users";
 import { routes } from "../routes";
+import { getPius, postPiu } from "../service";
+import { useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export const Home = () => {
+  const { user } = useAuth();
   const [textValue, setTextValue] = useState("");
-  const [piupius, setPiupius] = useState<Piu[] | undefined>();
+  const [piupius, setPiupius] = useState<Piu[]>([]);
   const [newData, setNewData] = useState<Piu[] | undefined>();
   const [addingPiupiu, setAddingPiupiu] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const { id } = useParams();
 
   const topRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -28,13 +34,12 @@ export const Home = () => {
     refreshVariable: piupius,
   });
 
-  const handleSubmit = async (e: React.FormEvent, formValue?: string) => {
+  const postNewPiu = async (e: React.FormEvent, formValue?: string) => {
     e.preventDefault();
     setAddingPiupiu(true);
-    axios
-      .post("/posts", {
-        message: formValue,
-      })
+    console.log('enviando', formValue)
+   await postPiu(formValue as string)
+  
       .then(() => {
         setTextValue("");
       })
@@ -42,6 +47,18 @@ export const Home = () => {
         setAddingPiupiu(false);
       });
   };
+
+  const getPostsTimeline = async () => {
+    const response = await getPius();
+    console.log(response.data)
+    setPiupius([...piupius, ...response.data])
+    setIsLoading(false);
+  }
+
+  useEffect(() => {
+    getPostsTimeline()
+  }, []);
+
 
   return (
     <div ref={topRef} className="relative">
@@ -64,14 +81,14 @@ export const Home = () => {
         loading={addingPiupiu}
         value={textValue}
         onChange={(e) => setTextValue(e.target.value)}
-        onSubmit={handleSubmit}
-        user={{} as User}
+        onSubmit={postNewPiu}
+        user={user as User}
       />
       <PiupiuList
-        initialLoading={true}
+        initialLoading={false}
         topRef={topRef}
         bottomRef={bottomRef}
-        loading={true}
+        loading={isLoading}
         piupius={piupius}
         onChange={() => {}}
       />
