@@ -37,7 +37,6 @@ export const Home = () => {
   const postNewPiu = async (e: React.FormEvent, formValue?: string) => {
     e.preventDefault();
     setAddingPiupiu(true);
-    console.log('enviando', formValue)
    await postPiu(formValue as string)
   
       .then(() => {
@@ -50,7 +49,6 @@ export const Home = () => {
 
   const getPostsTimeline = async () => {
     const response = await getPius();
-    console.log(response.data)
     setPiupius([...piupius, ...response.data])
     setIsLoading(false);
   }
@@ -78,6 +76,7 @@ export const Home = () => {
         <h2 className="text-xl font-bold px-4 py-3 ">Casa</h2>
       </NavTitle>
       <NewPiupiu
+        // key={}
         loading={addingPiupiu}
         value={textValue}
         onChange={(e) => setTextValue(e.target.value)}

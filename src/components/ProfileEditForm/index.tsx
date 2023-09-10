@@ -4,6 +4,8 @@ import ProfilePic from "../ProfilePic";
 import { User } from "../../types/Users";
 import Button from "../Button";
 import { Textarea } from "../Textarea";
+import { updateUser } from "../../service";
+import { useParams } from "react-router-dom";
 
 type ProfileEditFormProps = {
   onSubmit?: (user: Partial<User>) => void;
@@ -15,6 +17,8 @@ export const ProfileEditForm = ({ onSubmit, user }: ProfileEditFormProps) => {
   const [description, setDescription] = useState(user.description || "");
   const [name, setName] = useState(user.name);
 
+  // const { handle } = useParams();
+
   const handleOnSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const userData: Partial<User> = {
@@ -23,6 +27,10 @@ export const ProfileEditForm = ({ onSubmit, user }: ProfileEditFormProps) => {
       name,
     };
     onSubmit?.(userData);
+    // devo chamar a função updateUse aqui ou no input?
+    // updateUser(handle);
+    // aqui preciso de uma função de patch?  /user/{handle}
+    console.log('salvou');
   };
 
   return (
@@ -39,13 +47,13 @@ export const ProfileEditForm = ({ onSubmit, user }: ProfileEditFormProps) => {
         <Input
           placeholder="Link da imagem"
           value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setImageUrl(e.target.value)}
         />
         <Input
           defaultValue={user.name}
           placeholder="Nome"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
         />
         <Textarea
           variant="styled"

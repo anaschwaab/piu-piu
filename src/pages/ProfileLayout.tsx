@@ -9,22 +9,31 @@ import { BsFillPencilFill } from "react-icons/bs";
 import { ProfileEditForm } from "../components/ProfileEditForm";
 import { Dialog } from "../components/Dialog";
 import { routes } from "../routes";
-import { getUser } from "../service";
+import { getUser, updateUser } from "../service";
 import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../context/AuthContext";
 
 export const ProfileLayout = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { handle } = useParams();
-  console.log(handle);
+  const { user } = useAuth();
 
   const handleDialogClick = () => {
     setDialogOpen(!dialogOpen);
   };
 
+  const handleSubmit = async (userData: any) => {
+    try {
+      await updateUser(handle, userData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const { data } = useQuery({
-    queryKey: ['posts'],
-    queryFn: async() => await getUser(handle)
-  })
+    queryKey: ["user", handle],
+    queryFn: async () => await getUser(handle),
+  });
 
   return (
     <>
@@ -50,12 +59,16 @@ export const ProfileLayout = () => {
                 image={data?.user.image_url}
               />
             </div>
-            <div
-              onClick={handleDialogClick}
-              className="absolute cursor-pointer rounded-full bg-zinc-950 hover:bg-zinc-900 p-6 right-4 top-4"
-            >
-              <BsFillPencilFill />
-            </div>
+
+            {user?.handle === handle && (
+              <div
+                onClick={handleDialogClick}
+                className="absolute cursor-pointer rounded-full bg-zinc-950 hover:bg-zinc-900 p-6 right-4 top-4"
+              >
+                <BsFillPencilFill />
+              </div>
+            )}
+
           </div>
           <div>
             <Username size="xl" variant="column" user={data?.user} />
@@ -64,14 +77,21 @@ export const ProfileLayout = () => {
         </section>
       </NavTitle>
       <Outlet />
-      <Dialog
-        onClose={() => {
-          setDialogOpen(false);
-        }}
-        open={dialogOpen}
-      >
-        {data?.user && <ProfileEditForm onSubmit={() => {}} user={data?.user} />}
-      </Dialog>
+      {user?.handle === handle && (
+        <Dialog
+          onClose={() => {
+            setDialogOpen(false);
+          }}
+          open={dialogOpen}
+        >
+          {data?.user && (
+            <ProfileEditForm
+              onSubmit={(data) => handleSubmit(data)}
+              user={data?.user}
+            />
+          )}
+        </Dialog>
+      )}
     </>
   );
 };

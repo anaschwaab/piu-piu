@@ -1,6 +1,6 @@
 import { backendRoutes } from "../routes";
 import { Api } from "./api";
-import { LoginProps } from "../types/Users";
+import { LoginProps, User } from "../types/Users";
 import { RegisterProps } from "../types/Users";
 
 interface PostsLikes {
@@ -167,6 +167,19 @@ export async function postPiu(mensagem: string ) {
             headers: { Authorization: `Bearer ${tokenUser}`}
         });
         
+    } catch (error) {
+        console.log(error)
+    } 
+}
+
+export async function updateUser(handle: string | undefined, userData: any) {
+    const tokenUser = localStorage.getItem('token');
+    try {
+        await Api.patch(backendRoutes.profile(handle), 
+        userData,
+        {
+            headers: { Authorization: `Bearer ${tokenUser}`}
+        });
     } catch (error) {
         console.log(error)
     } 

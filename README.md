@@ -3,16 +3,22 @@
   - As páginas de login e signup devem ser públicas
     - Usuarios logados tentando acessar essas rotas devem ser redirecionados para a home
   - As rotas /home /:handle/\* /piu/:id só devem ser acessáveis por usuários logados
-    - Quando o usuário acessar o seu próprio perfil, ele, e apenas ele, deve ser capaz de alterar sua imagem, descrição e nome
+    - Quando o usuário acessar o seu próprio perfil, ele, e apenas ele, deve ser capaz de alterar sua imagem, descrição e nome 
   - O token e demais informações do usuário devem ser salvos no local storage
+
 
 - Eu COMO usuário gostaria de rotas para navegar pela aplicação e ver dados relevantes em cada uma delas
 
   - A rota /home deve exibir uma lista de posts e a possibilidade de criar um novo post
+
+
+  TENHO QUE ATUALIZAR  PAGE HOME DEPIS QUE PIA!!
+
+  
   - A rota /:handle deve exibir os dados do usuário da handle especificada e, por padrão, os posts do usuário organizados em ordem decrescente de data de criação
   - A rota /:handle/likes deve exibir os dados do usuário da handle especificada e a lista de posts curtidos pelo usuário em ordem decrescente de data de curtida
   - A rota /piu/:id deve exibir a piada ( o post ) correspondente ao id além de todas as respostas a esse post, em ordem decrescente de data de criação
-  - Rotas incorretas ou não existentes devem redirecionar o usuário para /home
+  - Rotas incorretas ou não existentes devem redirecionar o usuário para /home ##IMPORTANTE
 
 - Eu COMO usuário gostaria que as páginas exibissem o conteúdo relativo e que minhas modificações fossem persistidas e enviadas para os demais usuários
 
