@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavHeader } from "../components/NavHeader";
 import NavTitle from "../components/NavTitle";
 import ProfilePic from "../components/ProfilePic";
 import { Username } from "../components/Username";
 import { User } from "../types/Users";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { BsFillPencilFill } from "react-icons/bs";
 import { ProfileEditForm } from "../components/ProfileEditForm";
 import { Dialog } from "../components/Dialog";
@@ -17,18 +17,21 @@ export const ProfileLayout = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { handle } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const handleDialogClick = () => {
     setDialogOpen(!dialogOpen);
   };
 
-  const handleSubmit = async (userData: any) => {
+  const handleSubmit = async (userData: Partial<User>) => {
     try {
       await updateUser(handle, userData);
     } catch (error) {
       console.log(error);
+      navigate("/home");
     }
   };
+
 
   const { data } = useQuery({
     queryKey: ["user", handle],

@@ -5,8 +5,8 @@ import sound from "../../assets/E o pintinho piu.mp3";
 import { Textarea } from "../Textarea";
 import { DeletableImage } from "../DeletableImage";
 import { checkForImageLinks } from "../../helpers";
-import { postPiu } from "../../service";
-import { useNavigate, useParams } from "react-router-dom";
+// import { postPiu } from "../../service";
+// import { useNavigate, useParams } from "react-router-dom";
 
 type NewPiupiuProps = {
   user: {
