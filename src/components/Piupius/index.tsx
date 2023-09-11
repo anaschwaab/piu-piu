@@ -10,6 +10,7 @@ import { forwardRef } from "react";
 import { checkForImageLinks } from "../../helpers";
 import { backendRoutes, routes } from "../../routes";
 import { useAuth } from "../../context/AuthContext";
+import { deleteLikes, postLikes } from "../../service";
 // import { postPiu, postPiuReply } from "../../service";
 
 type PiupiuProps = {
@@ -35,7 +36,7 @@ export const Piupiu = forwardRef(
     const debounceTimer = useRef<number | undefined>();
     const [foundLinks, setFoundLinks] = useState("");
 
-    // const { handle } = useParams();
+    const { handle } = useParams();
 
     const { token } = useAuth()
     // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
@@ -48,9 +49,11 @@ export const Piupiu = forwardRef(
         if (liked !== reactions.like?.active) return;
         try {
           if (!liked) {
-            await axios.post(backendRoutes.singlePiupiu.like(id));
+            // await axios.post(backendRoutes.singlePiupiu.like(id));
+            await postLikes(id, handle as string);
           } else {
-            await axios.delete(backendRoutes.singlePiupiu.like(id));
+            // await axios.delete(backendRoutes.singlePiupiu.like(id));
+            await deleteLikes(id);
           }
         } catch (err) {
           setLiked(!liked);
@@ -65,7 +68,6 @@ export const Piupiu = forwardRef(
       e.preventDefault();
       setReplying(true);
       try {
-        // await postPiuReply(submitingText, handle)
         await axios.post(`/posts/${id}/reply`, {
           message: submitingText,
         });
@@ -81,6 +83,7 @@ export const Piupiu = forwardRef(
     const handleClick = () => {
       onClick ? onClick() : navigate(routes.singlePiupiu(id));
     };
+    
     const reactionProps = useMemo(() => {
       return {
         comment: {
