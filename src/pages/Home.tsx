@@ -9,8 +9,9 @@ import { piuComponentHeight } from "../consts";
 import { User } from "../types/Users";
 import { routes } from "../routes";
 import { getPius, postPiu } from "../service";
-import { useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useMutation, useInfiniteQuery } from "@tanstack/react-query";
+import queryClient from "../service/queryClient";
 
 export const Home = () => {
   const { user } = useAuth();
@@ -18,45 +19,69 @@ export const Home = () => {
   const [piupius, setPiupius] = useState<Piu[]>([]);
   const [newData, setNewData] = useState<Piu[] | undefined>();
   const [addingPiupiu, setAddingPiupiu] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { id } = useParams();
 
   const topRef = useRef<HTMLDivElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const itemsPerPage = Math.ceil(window.screen.height / piuComponentHeight);
 
   const { scrollTop } = usePagination({
-    onBottomEnter: () => {},
-    onTopEnter: () => {},
+    onBottomEnter: () => {hasNextPage && fetchNextPage()},
+    onTopEnter: () => {setNewData([])},
     onTopLeave: () => {},
     bottomRef,
     topRef,
     refreshVariable: piupius,
   });
 
-  const postNewPiu = async (e: React.FormEvent, formValue?: string) => {
+  const {
+    fetchNextPage,
+    hasNextPage,
+    isLoading,
+  } = useInfiniteQuery(
+    ["piu"],
+    (params) => {
+      return getPius({
+        page: params.pageParam ? params.pageParam : 1,
+        perPage: itemsPerPage,
+    });
+    
+    },
+    {
+      getNextPageParam: (lastPage, allPages) => {
+        if (lastPage.currentPage < allPages[0].totalPages) {
+          return lastPage.currentPage + 1;
+        }
+        return undefined;
+      },
+      onSuccess: (response) => setPiupius(response?.pages.flatMap(page => page.data)),
+      refetchInterval: 20000,
+      structuralSharing(oldData, newData) {
+        console.log(oldData, newData)
+        if (oldData?.pages) {
+          if (oldData?.pages[0] !== newData.pages[0]) {
+            const difference = newData.pages[0].totalPius - oldData?.pages[0].totalPius;
+            
+            setNewData(newData.pages[0].data.slice(0, difference));
+          }
+        }
+        return newData;
+      },
+    }
+  );
+
+
+  const { mutate } = useMutation({
+    mutationFn: async(replyText: string) => await postPiu(replyText),
+    onSuccess: () => queryClient.invalidateQueries(["piu"]) 
+  })
+
+  const postNewPiu = async (e: React.FormEvent, formValue: string) => {
     e.preventDefault();
     setAddingPiupiu(true);
-   await postPiu(formValue as string)
-  
-      .then(() => {
-        setTextValue("");
-      })
-      .finally(() => {
-        setAddingPiupiu(false);
-      });
+    mutate(formValue);
+    setTextValue("");
+    setAddingPiupiu(false);
   };
-
-  const getPostsTimeline = async () => {
-    const response = await getPius();
-    setPiupius([...piupius, ...response.data])
-    setIsLoading(false);
-  }
-
-  useEffect(() => {
-    getPostsTimeline()
-  }, []);
-
 
   return (
     <div ref={topRef} className="relative">
@@ -84,10 +109,10 @@ export const Home = () => {
         user={user as User}
       />
       <PiupiuList
-        initialLoading={false}
+        initialLoading={isLoading}
         topRef={topRef}
         bottomRef={bottomRef}
-        loading={isLoading}
+        loading={true}
         piupius={piupius}
         onChange={() => {}}
       />

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { CompletePiupiu } from "../components/CompletePiupiu";
 import { NavHeader } from "../components/NavHeader";
 import { Piu } from "../types/Pius";
@@ -6,45 +6,58 @@ import NewPiupiu from "../components/NewPiupiu";
 import { PiupiuList } from "../components/PiupiuList";
 import { User } from "../types/Users";
 import { getPiuReplies, getSinglePiu, postLikes, postPiuReply } from "../service";
-import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useParams } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import queryClient from "../service/queryClient";
 
 export const SinglePiupiu = () => {
   const [liked, setLiked] = useState(false);
   const [userReply, setuserReply] = useState("");
   const [replying, setReplying] = useState(false);
   const { id } = useParams();
-  const navigate = useNavigate();
+  const [post, setPost] = useState<Piu>();
 
-  const { data: post } = useQuery({
+  const { data } = useQuery({
     queryKey: ["piu"],
     queryFn: async () => await getSinglePiu(id),
   });
 
-  const { data: singlePiu, isLoading } = useQuery({
+  const { data: replies, isLoading } = useQuery({
     queryKey: ["replies"],
     queryFn: async () => await getPiuReplies(id),
   });
 
   const getReplies = useCallback(async () => {}, []);
 
+  const { mutate } = useMutation({
+    mutationFn: async(replyText: string) => await postPiuReply(replyText, id),
+    onSuccess: () => queryClient.invalidateQueries(['replies']) // vai fazer a requisição novamente
+    // onMutate: (data) => singlePiu?.replies
+  })
+
   const handleSubmit = async (e: React.FormEvent, replyText: string) => {
     console.log(e, replyText);
-    await postPiuReply(replyText, id);
+    // await postPiuReply(replyText, id);
     // Precisa atualizar a pagina depois que posta
-    navigate('home');
+    mutate(replyText); // ta chamando mutationFn
+    setuserReply(""); // para limpar o input depois que faz o post
   };
 
   const handleLike = useCallback(async () => {
     postLikes(id);
   }, []);
 
+  useEffect(() => {
+    data && setPost(data)
+    console.log(data);
+  }, [data])
+
   return (
     <>
       <NavHeader title="Post" />
       <CompletePiupiu
         author={post?.author}
-        body={post?.mensagem || "--"}
+        body={post?.message || ""}
         reactions={{
           reactions: {
             comment: {
@@ -72,7 +85,7 @@ export const SinglePiupiu = () => {
         loading={replying}
       />
       <PiupiuList
-        piupius={singlePiu?.replies || []}
+        piupius={replies?.replies || []}
         onChange={getReplies}
         loading={isLoading}
       />

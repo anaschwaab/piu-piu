@@ -2,6 +2,7 @@ import { ReactNode, createContext, useContext, useState, useEffect } from "react
 import { Login } from "../service";
 import { LoginProps, User } from "../types/Users";
 import { useNavigate } from "react-router-dom";
+import { Api } from "../service/api";
 
 type AuthData = {
     isAuthenticated: boolean;
@@ -54,6 +55,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         setIsAuthenticated(true);
     }, []);
+
+    // const isAuthentic = () => {
+    //     if (!token) {
+    //         return false;
+    //     }
+    //     Api.defaults.headers.common.Authorization = `Bearer ${token.token}`;
+    //     return true;
+    // };
 
     return (
         <AuthContext.Provider value={{ isAuthenticated, signIn, logout, user, token }}>

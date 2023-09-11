@@ -4,12 +4,13 @@ import { ProfilePic } from "../ProfilePic";
 import { ReactionsBar, reactions } from "../ReactionsBar";
 import { Username } from "../Username";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import NewPiupiu from "../NewPiupiu";
 import { forwardRef } from "react";
 import { checkForImageLinks } from "../../helpers";
 import { backendRoutes, routes } from "../../routes";
 import { useAuth } from "../../context/AuthContext";
+// import { postPiu, postPiuReply } from "../../service";
 
 type PiupiuProps = {
   id: string;
@@ -33,6 +34,8 @@ export const Piupiu = forwardRef(
     const replyRef = useRef<HTMLDivElement | null>(null);
     const debounceTimer = useRef<number | undefined>();
     const [foundLinks, setFoundLinks] = useState("");
+
+    // const { handle } = useParams();
 
     const { token } = useAuth()
     // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
@@ -62,6 +65,7 @@ export const Piupiu = forwardRef(
       e.preventDefault();
       setReplying(true);
       try {
+        // await postPiuReply(submitingText, handle)
         await axios.post(`/posts/${id}/reply`, {
           message: submitingText,
         });
