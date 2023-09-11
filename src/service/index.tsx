@@ -125,11 +125,11 @@ export async function getLatestUsers() {
   }
 }
 
-export async function postLikes(postId: string | undefined) {
+export async function postLikes(postId: string | undefined, handle: string) {
   const tokenUser = localStorage.getItem("token");
 
   try {
-    const response = await Api.post(backendRoutes.singlePiupiu.like(postId), {
+    const response = await Api.post(backendRoutes.singlePiupiu.like(postId), handle, {
       headers: { Authorization: `Bearer ${tokenUser}` },
     });
     const { data } = response;

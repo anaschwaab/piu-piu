@@ -1,5 +1,4 @@
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { NewPiupiu } from "../components/NewPiupiu";
 import { Piu } from "../types/Pius";
 import NavTitle from "../components/NavTitle";
@@ -56,7 +55,6 @@ export const Home = () => {
       onSuccess: (response) => setPiupius(response?.pages.flatMap(page => page.data)),
       refetchInterval: 20000,
       structuralSharing(oldData, newData) {
-        console.log(oldData, newData)
         if (oldData?.pages) {
           if (oldData?.pages[0] !== newData.pages[0]) {
             const difference = newData.pages[0].totalPius - oldData?.pages[0].totalPius;
@@ -101,7 +99,6 @@ export const Home = () => {
         <h2 className="text-xl font-bold px-4 py-3 ">Casa</h2>
       </NavTitle>
       <NewPiupiu
-        // key={}
         loading={addingPiupiu}
         value={textValue}
         onChange={(e) => setTextValue(e.target.value)}

@@ -15,13 +15,13 @@
   - A rota /piu/:id deve exibir a piada ( o post ) correspondente ao id além de todas as respostas a esse post, em ordem decrescente de data de criação
   - Rotas incorretas ou não existentes devem redirecionar o usuário para /home
 
-- Eu COMO usuário gostaria que as páginas exibissem o conteúdo relativo e que minhas modificações fossem persistidas e enviadas para os demais usuários QUE???
+- Eu COMO usuário gostaria que as páginas exibissem o conteúdo relativo e que minhas modificações fossem persistidas e enviadas para os demais usuários
 
   - A página principal exibir os posts em ordem decrescente. Os dados exibidos devem ser revalidados a cada, pelo menos, 20 segundos ( não coloquem mais que 15s porque não sei se meu back aguenta 😑 )
     - Os posts da página principal serão paginados e com ‘scroll infinito’
     - Se o usuário NÃO estiver visualizando o topo da página ( o post mais recente ), o botão de refresh deve ser exibido, mostrando as imagens dos usuários que fizeram os posts mais recentes
-    - Se o usuário estiver visualizando o topo da página, os novos dados devem ser exibidos imediatamente HMMM???
-    - Mudanças nos posts que já existem na página devem ser aplicadas SEMPRE, independente da posição do scroll do usuário COMO GARANTIR ISSO???
+    - Se o usuário estiver visualizando o topo da página, os novos dados devem ser exibidos imediatamente
+    - Mudanças nos posts que já existem na página devem ser aplicadas SEMPRE, independente da posição do scroll do usuário
   - A página principal deve exibir os últimos usuários cadastrados e deve ser atualizado a cada, pelo menos, 5 minutos ( Mesma coisa, vamos brincar nessa casa de tempo pra não derrubar meu back )
   - As páginas de usuários deverão exibir todos os posts ou todos as curtidas do usuário especificado na rota, seguindo as regras dadas na história de rotas.
     - Os dados das páginas de usuários NÃO serão paginados

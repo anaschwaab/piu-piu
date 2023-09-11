@@ -5,7 +5,7 @@ import { Piu } from "../types/Pius";
 import NewPiupiu from "../components/NewPiupiu";
 import { PiupiuList } from "../components/PiupiuList";
 import { User } from "../types/Users";
-import { getPiuReplies, getSinglePiu, postLikes, postPiuReply } from "../service";
+import { getPiuReplies, getSinglePiu, postPiuReply } from "../service";
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import queryClient from "../service/queryClient";
@@ -31,20 +31,18 @@ export const SinglePiupiu = () => {
 
   const { mutate } = useMutation({
     mutationFn: async(replyText: string) => await postPiuReply(replyText, id),
-    onSuccess: () => queryClient.invalidateQueries(['replies']) // vai fazer a requisição novamente
-    // onMutate: (data) => singlePiu?.replies
+    onSuccess: () => queryClient.invalidateQueries(['replies'])
   })
 
   const handleSubmit = async (e: React.FormEvent, replyText: string) => {
     console.log(e, replyText);
-    // await postPiuReply(replyText, id);
-    // Precisa atualizar a pagina depois que posta
-    mutate(replyText); // ta chamando mutationFn
-    setuserReply(""); // para limpar o input depois que faz o post
+    mutate(replyText);
+    setuserReply("");
+    setReplying(false);
   };
 
   const handleLike = useCallback(async () => {
-    postLikes(id);
+    setLiked(true);
   }, []);
 
   useEffect(() => {
