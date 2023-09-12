@@ -8,9 +8,11 @@ import { getLatestUsers } from "../service";
 
 export const MainLayout = () => {
 
+  
   const { data, isLoading} = useQuery({
     queryKey: ['latestusers'],
-    queryFn: async() => await getLatestUsers()
+    queryFn: async() => await getLatestUsers(),
+    staleTime: 1000 * 60 * 5
   });
 
   return (
